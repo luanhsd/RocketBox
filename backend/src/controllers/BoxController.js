@@ -1,7 +1,11 @@
 const Box = require('../models/Box')
 
 class BoxController {
-    store(request, response) {
-        return response.send('Recurso Criado')
+    async store(request, response) {
+        const box = await Box.create(request.body)
+
+        return response.json(box)
     }
 }
+
+module.exports = new BoxController()
