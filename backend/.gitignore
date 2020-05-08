@@ -8,6 +8,9 @@
 #path tmp
 /tmp
 
+#env
+.env
+
 # testing
 /coverage
 
