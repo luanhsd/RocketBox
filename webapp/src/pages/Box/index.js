@@ -10,15 +10,19 @@ import { pt } from 'date-fns/locale'
 import './styles.css'
 
 export default function Box() {
-    const [box, setBox] = useState('')
+    const [box, setBox] = useState({
+        _id: '',
+        title: '',
+        createdAt: '',
+        files: [],
+        updatedAt: '',
+    })
     let { id } = useParams();
 
 
     useEffect(() => {
-        subscribeToNewFiles()
         api.get(`boxes/${id}`)
             .then(response => {
-                console.log(response.data)
                 setBox(response.data)
             })
     }, [id])
@@ -31,13 +35,14 @@ export default function Box() {
         })
     }
 
-    function subscribeToNewFiles() {
+    useEffect(() => {
         const io = socket('http://localhost:3001')
         io.emit('connectRoom', id)
         io.on('file', data => {
-            setBox({ box: { ...box, files: [data, ...box.files] } })
+            console.log(box)
+            setBox({ ...box, files: [data, ...box.files] })
         })
-    }
+    }, [box])
 
     return (
         <div id="box-container">
