@@ -8,11 +8,11 @@ app.use(express.json())
 app.use(cors())
 
 
-const server = require('http').Server(app)
+const server = require('http').createServer(app)
 const io = require('socket.io')(server)
 
 io.on('connection', socket => {
-    socket.io('connectRoom', box => {
+    socket.on('connectRoom', box => {
         socket.join(box)
     })
 })

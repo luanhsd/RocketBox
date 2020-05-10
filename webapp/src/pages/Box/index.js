@@ -18,6 +18,7 @@ export default function Box() {
         subscribeToNewFiles()
         api.get(`boxes/${id}`)
             .then(response => {
+                console.log(response.data)
                 setBox(response.data)
             })
     }, [id])
@@ -31,7 +32,7 @@ export default function Box() {
     }
 
     function subscribeToNewFiles() {
-        const io = socket('https://omnistack-backend.herokuapp.com')
+        const io = socket('http://localhost:3001')
         io.emit('connectRoom', id)
         io.on('file', data => {
             setBox({ box: { ...box, files: [data, ...box.files] } })

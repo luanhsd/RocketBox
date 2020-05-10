@@ -3,10 +3,10 @@ const File = require('../models/File')
 
 class FileController {
     async store(request, response) {
-        const box = await Box.findById(req.params.id)
+        const box = await Box.findById(request.params.id)
         const file = await File.create({
-            title: req.file.originalname,
-            path: req.file.key
+            title: request.file.originalname,
+            path: request.file.key
         })
 
         box.files.push(file)
