@@ -15,6 +15,7 @@
     "@react-navigation/native": "^5.3.0",
     "@react-navigation/stack": "^5.3.2",
     "axios": "^0.19.2",
+    "date-fns": "^2.15.0",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-file-viewer": "^2.0.2",
@@ -25,7 +26,8 @@
     "react-native-reanimated": "^1.8.0",
     "react-native-safe-area-context": "^1.0.0",
     "react-native-screens": "^2.7.0",
-    "react-native-vector-icons": "^6.6.0"
+    "react-native-vector-icons": "^6.6.0",
+    "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

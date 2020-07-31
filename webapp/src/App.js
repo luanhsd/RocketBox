@@ -1,7 +1,10 @@
 import React from 'react';
 import './App.css';
-import Routes from './routes'
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Unrecognized WebSocket']);
 
-const App = () => <Routes />
+import Routes from './routes';
 
-export default App
+const App = () => <Routes />;
+
+export default App;
