@@ -1,76 +1,36 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import api from '../../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import ImagePicker from 'react-native-image-picker';
+import styles from './styles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {formatDistance} from 'date-fns';
+import {pt} from 'date-fns/locale';
+import ImagePicker from 'react-native-image-picker';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
-import {pt} from 'date-fns/locale';
-import api from '../../services/api';
-import styles from './styles';
-import socket from 'socket.io-client';
 
 const Box = () => {
-  const [box, setBox] = useState({
-    _id: '',
-    title: '',
-    createdAt: '',
-    files: [],
-    updatedAt: '',
-  });
-  const id = await AsyncStorage.getItem('@RocketBox:box');
+  const [box, setBox] = useState({});
+  useEffect(() => {
+    getContent();
+  }, []);
 
-  useEffect(async () => {
+  async function getContent() {
+    const id = await AsyncStorage.getItem('@RocketBox:box');
     api.get(`boxes/${id}`).then((response) => {
       setBox(response.data);
     });
-  }, []);
+  }
 
-  useEffect(() => {
-    const io = socket('http://localhost:3001');
-    io.emit('connectRoom', id);
-    io.on('file', (data) => {
-      console.log(box);
-      setBox({...box, files: [data, ...box.files]});
-    });
-  }, [box]);
-
-  openFile = async (file) => {
-    try {
-      const filePath = `${RNFS.DocumentDirectoryPath}/${file.title}`;
-
-      await RNFS.downloadFile({
-        fromUrl: file.url,
-        toFile: filePath,
-      });
-      await FileViewer.open(filePath);
-    } catch (err) {
-      console.log('Not supported file!');
-    }
-  };
-
-  renderItem = ({item}) => (
-    <TouchableOpacity onPress={() => openFile(item)} style={styles.file}>
-      <View style={styles.fileInfo}>
-        <Icon name="insert-drive-file" size={24} color="#A5CFFF" />
-        <Text style={styles.fileTitle}>{item.title}</Text>
-      </View>
-      <Text style={styles.fileDate}>
-        há {formatDistance(new Date(item.createdAt), new Date(), {locale: pt})}
-      </Text>
-    </TouchableOpacity>
-  );
-
-  handleUpload = () => {
+  const handleUpload = () => {
     ImagePicker.launchImageLibrary({}, async (upload) => {
       if (upload.error) {
-        console.log('ImagePicker error');
+        console.log('ImagePicker error!');
       } else if (upload.didCancel) {
-        console.log('Canceled by user');
+        console.log('Canceled by user!');
       } else {
         const data = new FormData();
-
         const [prefix, suffix] = upload.fileName.split('.');
         const ext = suffix.toLowerCase() === 'heic' ? 'jpg' : suffix;
 
@@ -80,15 +40,44 @@ const Box = () => {
           name: `${prefix}.${ext}`,
         });
 
-        api.post(`boxes/${box._id}`, data);
+        api.post(`boxes/${box._id}/files`, data);
       }
     });
   };
 
+  async function openFile(item) {
+    console.log(item.title);
+    try {
+      const FilePath = `${RNFS.DocumentDirectoryPath}/${item.title}`;
+      await RNFS.downloadFile({
+        fromUrl: file.url,
+        toFile: FilePath,
+      });
+
+      await FileViewer.open(FilePath);
+    } catch (err) {
+      console.log('File not supported');
+    }
+  }
+
+  const renderItem = ({item}) => (
+    <TouchableOpacity onPress={() => openFile(item)} style={styles.file}>
+      <View style={styles.fileInfo}>
+        <Icon name="insert-drive-file" size={24} color="#7159c1" />
+        <Text style={styles.fileTitle}>{item.title}</Text>
+      </View>
+      <Text style={styles.fileDate}>
+        há{' '}
+        {formatDistance(new Date(item.createdAt), new Date(), {
+          locale: pt,
+        })}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.boxTitle}>{box.title}</Text>
-
       <FlatList
         style={styles.list}
         data={box.files}

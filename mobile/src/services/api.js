@@ -1,7 +1,7 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const api = axios.create({
-    baseURL: "https://omnistack-backend.herokuapp.com",
-})
+  baseURL: 'http://192.168.0.151:3001',
+});
 
-export default api
+export default api;
